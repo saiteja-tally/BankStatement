@@ -15,7 +15,7 @@ class TableDetector():
     
     def get_table(self, plumber_page, recognizer):
 
-        table_xyxy, table_type, table_v_lines, table_h_lines = self.detect_table_cv(plumber_page)
+        table_xyxy, table_type, table_v_lines, table_h_lines = self.detect_table_cv(plumber_page, recognizer)
 
         if not table_xyxy:
             if is_debug_mode():
@@ -27,7 +27,7 @@ class TableDetector():
 
         return table_xyxy, table_type, table_v_lines, table_h_lines
 
-    def detect_table_cv(self, plumber_page) -> Tuple[np.ndarray, List[List[int]], List[List[int]]]:
+    def detect_table_cv(self, plumber_page, recognizer):
         
         # Convert PDF page to image using PDFPlumber's to_image
         img = plumber_page.to_image(resolution=self.dpi)
@@ -230,4 +230,3 @@ class TableDetector():
         self.horizontal_lines = merged_h_lines
         self.vertical_lines = merged_v_lines
 
-   

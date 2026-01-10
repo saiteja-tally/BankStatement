@@ -1,12 +1,21 @@
 import torch
 from sentence_transformers import SentenceTransformer
+from paddleocr import TableRecognitionPipelineV2
+import os
+import yaml
+import paddle
+import numpy as np
 
 from ..config import HEADER_KEYWORDS, COMMON_HEADERS
+
 
 class TableRecognizer():
     def __init__(self):
         self.transformer_model = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
         self.header_keyword_embeddings = self.transformer_model.encode(HEADER_KEYWORDS, convert_to_tensor=True, normalize_embeddings=True)
+        with open(os.path.join(os.path.dirname(__file__), 'config.yaml'), 'r') as f:
+            self.tsr_config = yaml.safe_load(f)
+            self.TSRecognizer = TableRecognitionPipelineV2(**self.tsr_config['paddleocrdetector'])
 
     def recognize_table_headers(self, page):
 

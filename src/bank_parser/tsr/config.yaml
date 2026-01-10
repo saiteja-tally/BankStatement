@@ -1,0 +1,55 @@
+ocr:
+  lang: 'en'
+  device: 'gpu:0'
+  use_doc_orientation_classify: false
+  use_doc_unwarping: false
+  use_textline_orientation: false
+  text_det_unclip_ratio: 1.0
+  text_det_thresh: 0.6
+
+paddleocrdetector:
+  use_doc_unwarping: false
+  # 1. Use the Wireless Structure Model (Crucial for row separation)
+  wireless_table_structure_recognition_model_name: 'SLANeXt_wireless'
+  # 2. Use the Wireless Cell Detection Model (Crucial for bounding boxes)
+  wireless_table_cells_detection_model_name: 'RT-DETR-L_wireless_table_cell_det'
+  
+  # 3. Text Detection: Finds text content
+  text_detection_model_name: "PP-OCRv4_server_det"
+  
+  # 4. Text Recognition: Reads the text
+  text_recognition_model_name: "PP-OCRv4_server_rec"
+
+cv:
+  morph:
+    iterations: 3
+    dilation_size: 5
+  lines:
+    rho: 1
+    theta: 1.5707963267948966  # np.pi/180
+    threshold: 10
+    max_line_gap: 20
+    min_line_length:
+      horizontal: 0.75  # percentage of image width
+      vertical: 0.25    # percentage of image width
+  horizontal_threshold: 2
+  margin: 0.005
+
+tsr:
+  bin_size: 10
+  line_break_threshold_factor: 0.5  # multiply by avg_height
+  header_tolerance_factor: 0.5  # multiply by first element height
+  extra_large_gap_factor: 1.5  # multiply by line_break_threshold + avg_height
+
+table_confidence:
+  min_confidence: 0.6
+  min_area_ratio: 0.2
+  min_line_length_ratio: 0.75
+  min_hor_ratio: 0.4
+  min_ver_ratio: 0.4
+  min_total_ratio: 0.4
+  min_intersection_ratio: 0.5
+  margin: 0.005
+
+alt_cv:
+  min_height: 0.5
