@@ -25,14 +25,14 @@ class BankStatementParser:
 
         transactions = []
 
-        for page_idx, plumber_page in Doc.stream_pages():
-            page = Page(page_idx)
+        for _, plumber_page in Doc.stream_pages():
+            page = Page(plumber_page.page_number)
             page.table_xyxy, page.table_h_lines, page.table_v_lines, page.table_type = self.detector.get_table(plumber_page, self.recognizer)
             page.table_ocr_data = self.ocr_engine.extract_table_ocr_data(plumber_page, page.table_xyxy) if page.table_xyxy else None
             page.table_headers = self.recognizer.recognize_table_headers(page) if page.table_h_lines else []
 
             if is_debug_mode():
-                print(f"Page {page_idx}: Detected table type: {page.table_type}")
+                print(f"Page {plumber_page.page_number}: Detected table type: {page.table_type}")
                 image = plumber_page.to_image(resolution=300).original
                 width, height = image.size
 
@@ -65,7 +65,7 @@ class BankStatementParser:
                         
                         draw.rectangle([x0, y0, x1, y1], outline="purple", width=1)
 
-                image.save(f"{temp_output}/debug_page_{page_idx}.png")
+                image.save(f"{temp_output}/page_{plumber_page.page_number}.png")
             
             Doc.pages.append(page)
 
@@ -79,6 +79,12 @@ class BankStatementParser:
             if Doc.following_blueprint(page):
                 page.table_headers = Doc.table_headers
                 page_transactions = self.recognizer.extract_transactions_from_page(page)
+                if is_debug_mode():
+                    print(f"Page {page.page_number}: Extracted {len(page_transactions)} transactions based on blueprint.")
+                    with open(os.path.join(temp_output, f"page_{page.page_number}_transactions.json"), "w") as f:
+                        import json
+                        json.dump(page_transactions, f, indent=4)
+
                 transactions.extend(page_transactions)
 
         if is_debug_mode():

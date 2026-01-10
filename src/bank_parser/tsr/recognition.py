@@ -8,11 +8,6 @@ class TableRecognizer():
         self.transformer_model = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
         self.header_keyword_embeddings = self.transformer_model.encode(HEADER_KEYWORDS, convert_to_tensor=True, normalize_embeddings=True)
 
-    def recognize_table(self, page):
-        # Placeholder for table recognition logic
-        # This function should populate the page object with recognized table data
-        pass
-
     def recognize_table_headers(self, page):
 
         """Recognize table headers using semantic similarity"""

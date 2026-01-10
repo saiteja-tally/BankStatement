@@ -1,12 +1,14 @@
 from src.bank_parser import BankStatementParser
+import os
 
 parser = BankStatementParser()
 
-input = "../samples/bordered"
+input = "../samples/bordered/indian bank 1.pdf"
 
 output = "./output/bordered"
 
 if input.lower().endswith(".pdf"):
+    print(f"Processing {os.path.basename(input)}...")
     parser.parse(input, output, password=None)
 else:
     import os
