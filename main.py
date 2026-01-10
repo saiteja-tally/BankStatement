@@ -3,7 +3,7 @@ import os
 
 parser = BankStatementParser()
 
-input = "../samples/bordered/indian bank 1.pdf"
+input = "../samples/bordered"
 
 output = "./output/bordered"
 

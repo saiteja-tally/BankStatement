@@ -19,7 +19,7 @@ class TableDetector():
 
         if not table_xyxy:
             if is_debug_mode():
-                print(f"[TableDetector] Falling back to pdfplumber method for page {plumber_page.page_number}.")
+                print(f"[TableDetector] Falling back to altcv method for page {plumber_page.page_number}.")
             table_xyxy = self.detect_table_altcv(plumber_page, recognizer)
 
             if not table_xyxy:
@@ -125,7 +125,7 @@ class TableDetector():
         if header_blocks:
             best_header = header_blocks[0]
             header_bbox = best_header['bbox']
-            table_xyxy = (0, header_bbox[1]/plumber_page.height, 1, 1)
+            table_xyxy = (0, 1-(header_bbox[1]/plumber_page.height), 1, 1)
             return table_xyxy
         else:
             return None, None
