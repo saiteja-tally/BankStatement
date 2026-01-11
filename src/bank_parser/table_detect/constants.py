@@ -1,10 +1,10 @@
 # --- Configuration Constants ---
 # Tolerance for classifying lines as horizontal or vertical
 LINE_ANGLE_TOLERANCE = 0.02
-HLINES_MIN_LENGTH_RATIO = 0.65
-VLINES_MIN_LENGTH_RATIO = 0.05
+HLINES_MIN_LENGTH_RATIO = 0.60
+VLINES_MIN_LENGTH_RATIO = 0.01
 # Proximity tolerance for clustering parallel lines
-PARALLEL_LINE_PROXIMITY = 0.0125
+PARALLEL_LINE_PROXIMITY = 0.005
 # Intersection tolerance for connecting horizontal and vertical lines
 INTERSECTION_TOLERANCE = 0.002
 # Minimum number of lines/rectangles to be considered a table
