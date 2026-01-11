@@ -128,7 +128,7 @@ class TableDetector():
             table_xyxy = (0, 1-(header_bbox[1]/plumber_page.height), 1, 1)
             return table_xyxy
         else:
-            return None, None
+            return None
 
     def _get_largest_table(self) -> Optional[Dict]:
         """Return the table with the largest area."""

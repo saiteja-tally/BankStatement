@@ -1,5 +1,6 @@
 from src.bank_parser import BankStatementParser
 import os
+import traceback
 
 parser = BankStatementParser()
 
@@ -19,5 +20,6 @@ else:
                 print(f"Processing {filepath}...")
                 parser.parse(filepath, output, password=None)
             except Exception as e:
+                traceback.print_exc()
                 print(f"Error processing {filepath}: {e}")
 

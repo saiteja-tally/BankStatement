@@ -129,9 +129,6 @@ def cluster_lines(horizontal_lines, vertical_lines):
                 v_line = line2 if line1['type'] == 'h' else line1
                 if lines_intersect(h_line, v_line):
                     connected = True
-            else:
-                if are_parallel_and_close(line1, line2, line1['type'] == 'h'):
-                    connected = True
             if connected:
                 adj[line1['id']].append(line2['id'])
                 adj[line2['id']].append(line1['id'])

@@ -15,6 +15,7 @@ class Document:
         self.plumber_doc = None
         self.pages = []
         self.table_v_lines = []
+        self.table_headers = []
 
     def open_pdf(self):
         if not os.path.exists(self.pdf_path):

@@ -72,10 +72,13 @@ class BankStatementParser:
         for page in Doc.pages:
             if not page.table_v_lines:
                 continue
-            if not Doc.table_v_lines:
+            if not Doc.table_headers and page.table_headers and page.table_v_lines:
                 Doc.table_v_lines = page.table_v_lines
                 Doc.table_headers = page.table_headers
             
+            if not Doc.table_headers:
+                continue
+
             if Doc.following_blueprint(page):
                 page.table_headers = Doc.table_headers
                 page_transactions = self.recognizer.extract_transactions_from_page(page)
@@ -86,6 +89,8 @@ class BankStatementParser:
                         json.dump(page_transactions, f, indent=4)
 
                 transactions.extend(page_transactions)
+            else:
+                print(f"Page {page.page_number}: Table structure differs significantly from blueprint. Skipping transaction extraction.")
 
         if is_debug_mode():
             import json
