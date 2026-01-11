@@ -21,5 +21,10 @@ else:
                 parser.parse(filepath, output, password=None)
             except Exception as e:
                 traceback.print_exc()
+                errfile = os.path.join(output, "errors.txt")
+                os.makedirs(os.path.dirname(errfile), exist_ok=True)
+                with open(errfile, "a", encoding="utf-8") as f:
+                    f.write(f"Error processing {filepath}: {e}\n")
+                    f.write(traceback.format_exc())
                 print(f"Error processing {filepath}: {e}")
 
