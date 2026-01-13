@@ -1,7 +1,4 @@
 from collections import defaultdict
-from typing import List, Tuple
-import numpy as np
-import pandas as pd
 
 from .table_classification import classify_cluster_table
 from .constants import *
@@ -73,7 +70,7 @@ def validate_tables_with_rects(clusters, rects):
             if not found_col: cols[r[0]].append(r)
 
         is_valid = False
-        if cluster['type'] == 'full' and len(rows) > 1 and len(cols) > 1: is_valid = True
+        if cluster['type'] == 'full' and len(rows) >= 1 and len(cols) > 1: is_valid = True
         elif cluster['type'] == 'horizontal' and len(rows) > 1: is_valid = True
         elif cluster['type'] == 'vertical' and len(cols) > 1: is_valid = True
 
@@ -234,57 +231,6 @@ def merge_lines(horizontal_lines, vertical_lines):
 
     return merged_h_lines, merged_v_lines
 
-def extract_header_blocks_between_edges(plumber_page, recognizer, min_phrases_in_row=2, crop_margin=20):
-    """Extract header blocks with bounding box and confidence scores"""
-    chars = pd.DataFrame(plumber_page.chars)
-    if chars.empty:
-        return []
-
-    hor_edges = extract_horizontal_edges(plumber_page)
-    if len(hor_edges) < 2:
-        return []
-
-    header_blocks = []
-    for k in range(len(hor_edges) - 1):
-        top, bottom = hor_edges[k], hor_edges[k + 1]
-
-        # Extract chars within the band
-        chars_band = chars[
-            (chars["y0"] >= top) & (chars["y1"] <= bottom)
-        ].sort_values(by=["y0", "x0"], ascending=[False, True])
-
-        if chars_band.empty:
-            continue
-        
-        words = chars_to_words(chars_band, char_tol=2)
-        phrases = group_words_by_logical_cells(words, x_gap_threshold=6, y_proximity_threshold=5)
-
-        if len(phrases) < min_phrases_in_row:
-            continue
-
-        # Compute confidence
-        confidence = recognizer.compute_semantic_header_score(phrases)
-
-        # Compute bounding box for this header block
-        x0 = min(p["x0"] for p in phrases)
-        y0 = min(p["y0"] for p in phrases)
-        x1 = max(p["x1"] for p in phrases)
-        y1 = max(p["y1"] for p in phrases)
-
-        # Apply margin to the top (y1) to ensure full header/table capture
-        y1_with_margin = y1 + crop_margin
-
-        header_blocks.append({
-            "phrases": phrases,
-            "confidence": confidence,
-            "bbox": (x0, y0, x1, y1_with_margin),  # full rectangle with margin on top
-            "band": (top, bottom)  # original horizontal band
-        })
-
-    # Sort by confidence descending
-    header_blocks.sort(key=lambda x: x["confidence"], reverse=True)
-    return header_blocks
-
 def chars_to_words(chars, char_tol):
     """Convert characters to words, handling horizontal spacing"""
     words = []
@@ -311,18 +257,6 @@ def chars_to_words(chars, char_tol):
         y1 = max(c["y1"] for c in word_chars)
         words_out.append({"text": text, "x0": x0, "y0": y0, "x1": x1, "y1": y1})
     return words_out
-
-def extract_horizontal_edges(page, tol=2.0):
-    """Extract horizontal edges from page lines and edges"""
-    lines = pd.DataFrame(page.lines + page.edges if hasattr(page, 'edges') else page.lines)
-    if lines.empty:
-        return []
-    lines['orientation'] = lines.apply(lambda row: 'horizontal' 
-                                      if np.isclose(row['y0'], row['y1'], atol=tol) else 'other', axis=1)
-    hor_lines = lines[lines['orientation'] == 'horizontal']
-    edge_ys = np.unique(np.concatenate((hor_lines['y0'].values, hor_lines['y1'].values)))
-    return np.sort(edge_ys)
-
 
 def group_words_by_logical_cells(words, x_gap_threshold, y_proximity_threshold):
     """

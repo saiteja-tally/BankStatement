@@ -9,9 +9,9 @@ from .page import Page
 from .config import is_debug_mode
 
 class BankStatementParser:
-    def __init__(self):
-        self.detector = TableDetector()
+    def __init__(self):   
         self.recognizer = TableRecognizer()
+        self.detector = TableDetector(self.recognizer)
         self.ocr_engine = OCREngine()
 
     def parse(self, pdf_path, output, password: str = None):
@@ -27,7 +27,7 @@ class BankStatementParser:
 
         for _, plumber_page in Doc.stream_pages():
             page = Page(plumber_page.page_number)
-            page.table_xyxy, page.table_h_lines, page.table_v_lines, page.table_type = self.detector.get_table(plumber_page, self.recognizer)
+            page.table_xyxy, page.table_h_lines, page.table_v_lines, page.table_type = self.detector.get_table(plumber_page)
             page.table_ocr_data = self.ocr_engine.extract_table_ocr_data(plumber_page, page.table_xyxy) if page.table_xyxy else None
             page.table_headers = self.recognizer.recognize_table_headers(page) if page.table_h_lines else []
 
